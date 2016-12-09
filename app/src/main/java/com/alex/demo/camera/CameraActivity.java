@@ -1,9 +1,11 @@
 package com.alex.demo.camera;
 
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -65,6 +67,8 @@ public class CameraActivity extends AppCompatActivity {
 
     private int selectedOrientationIndex = 0;
 
+    private Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +110,7 @@ public class CameraActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+
     private void initViews () {
 
         this.takePictureButton = (Button) this.findViewById(R.id.camera_take_picture_button);
@@ -132,6 +137,7 @@ public class CameraActivity extends AppCompatActivity {
 
         int containerWidth = previewContainer.getWidth();
         int containerHeight = previewContainer.getHeight();
+        Log.d(TAG, "camera trace -- > updatePreviewSurfaceSize : enter !!! containerWidth = " + containerWidth + ", containerHeight = " + containerHeight);
 
         int previewWidth = 0;
         int previewHeight = 0;
@@ -145,6 +151,8 @@ public class CameraActivity extends AppCompatActivity {
             previewHeight = sizePreview.height;
         }
 
+        Log.d(TAG, "camera trace -- > updatePreviewSurfaceSize : enter !!! previewWidth = " + previewWidth + ", previewHeight = " + previewHeight);
+
         int width = 0;
         int height = 0;
 
@@ -155,6 +163,8 @@ public class CameraActivity extends AppCompatActivity {
             height = containerHeight;
             width = (int)(1f*height*previewWidth/previewHeight);
         }
+
+
 
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)previewSurfaceView.getLayoutParams();
         params.width = width;
@@ -426,9 +436,16 @@ public class CameraActivity extends AppCompatActivity {
     private void setDisplayOrientation () {
         stopPreview();
         setRequestedOrientation(orientaionTypeList[selectedOrientationIndex]);
-        setupCameraParameters();
-        startPreview();
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setupCameraParameters();
+                startPreview();
+            }
+        }, 500);
     }
+
 
 
 
